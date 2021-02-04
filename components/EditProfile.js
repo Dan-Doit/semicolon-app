@@ -70,7 +70,6 @@ export default ({ userInfo, setUserInfo, setEditProfile, userAvatar, navigation 
         const { data } = await editUserMutation();
         setLoading(false)
         setEditProfile(false);
-        console.log(data)
     }
     return (<>
         <View>

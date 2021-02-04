@@ -1,15 +1,15 @@
 import { createStackNavigator } from "react-navigation-stack";
-import Messages from "../screens/messages/Messages";
+import Rooms from "../screens/messages/Rooms";
 import Message from "../screens/messages/Message";
 import styles from "../styles";
 
 export default createStackNavigator({
-  Messages: {
-    screen: Messages,
+  Rooms: {
+    screen: Rooms,
     navigationOptions: {
       headerBackTitle: " ",
       headerTintColor: styles.blackColor,
-      title: "Messages"
+      title: "Rooms"
     }
   },
   Message: {

@@ -110,14 +110,14 @@ const EditText = styled.Text`
 `;
 
 const FOLLOW = gql`
-  mutation following($id: String!) {
-    following(id: $id)
+  mutation follow($id: String!) {
+    follow(id: $id)
   }
 `;
 
 const UNFOLLOW = gql`
-  mutation unfollowing($id: String!) {
-    unfollowing(id: $id)
+  mutation unfollow($id: String!) {
+    unfollow(id: $id)
   }
 `;
 

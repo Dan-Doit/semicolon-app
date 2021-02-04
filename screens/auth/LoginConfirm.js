@@ -28,7 +28,6 @@ export default ({ navigation }) => {
     const handleConfirm = async () => {
         const { value } = Pwinput;
         if (value === "") {
-            console.log(value);
             return Alert.alert("비밀번호를 제대로 입력해 주세요.");
         }
         try {
@@ -37,7 +36,6 @@ export default ({ navigation }) => {
                 data: { confirmUser }
             } = await confirmUserMutation();
             if (confirmUser !== "" || confirmUser !== "츄라이 츄라이 어게인") {
-                console.log(confirmUser);
                 logIn(confirmUser);
             } else {
                 Alert.alert("비밀번호가 틀렸어요!");

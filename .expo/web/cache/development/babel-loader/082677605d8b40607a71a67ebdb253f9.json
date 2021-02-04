@@ -1,0 +1,1 @@
+{"ast":null,"code":"import Search from \"./SearchContainer\";\nexport default Search;","map":{"version":3,"sources":["D:/EMBEDED/Final_Project/semicolon_app/screens/tabs/Search/index.js"],"names":["Search"],"mappings":"AAAA,OAAOA,MAAP;AAEA,eAAeA,MAAf","sourcesContent":["import Search from \"./SearchContainer\";\r\n\r\nexport default Search;"]},"metadata":{},"sourceType":"module"}

@@ -26,3 +26,7 @@ install things
 
 yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error apollo-link graphql-tag
 yarn add apollo-link-ws subscriptions-transport-ws apollo-utilities
+yarn add react-native-gifted-chat
+yarn add react-native-paper
+yarn add @react-navigation/stack
+yarn add @callstack/react-theme-provider

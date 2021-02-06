@@ -85,7 +85,7 @@ export default ({ navigation }) => {
       <RoomContainer>
                       {data.seeRooms.map((room) => { 
           return(
-              <Touchable key={room.id} onPress={() => navigation.navigate('Message', { RoomInfo: {RoomId : room.id, ToId : room.participants[1].id } })}>
+              <Touchable key={room.id} onPress={() => navigation.navigate('Message', { roomInfo: {roomId : room.id, toId : room.participants[1].id } })}>
               <RoomView>
                 <ImageWrapper>
           <Image

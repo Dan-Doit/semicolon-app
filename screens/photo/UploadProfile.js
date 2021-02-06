@@ -26,7 +26,7 @@ const Button = styled.TouchableOpacity`
   width: 40%;
   margin : auto
   marginTop:30px;
-   padding: 10px;
+  padding: 10px;
   border-radius: 4px;
   align-items: center;
   justify-content: center;

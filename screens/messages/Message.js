@@ -1,13 +1,14 @@
-import React, {useState, Suspense } from "react";
+import React, {useState, Suspense, useEffect } from "react";
 import { View, Text, ScrollView, TextInput, KeyboardAvoidingView } from "react-native";
 import gql from "graphql-tag";
 import Loader from "../../components/Loader";
-import { useQuery, useMutation } from "react-apollo-hooks";
-
+import { useQuery, useMutation, useSubscription } from "react-apollo-hooks";
+import { SafeAreaView } from "react-native";
+import { MessageBubble } from "./MessageBubble";
 
 const GET_MESSAGES = gql`
-  query getMessages($RoomId : String) {
-    getMessages(RoomId:$RoomId){
+  query getMessages($roomId : String!) {
+    getMessages(roomId:$roomId){
       id
       to{
         id
@@ -33,26 +34,67 @@ const SEND_MESSAGE = gql`
   }
 `;
 
+const NEW_MESSAGE = gql`
+  subscription notificateMsg($roomId:String!){
+    notificateMsg(roomId:$roomId) {
+      id
+      to{
+        id
+        username
+        avatar
+      }
+      from{
+        id
+        username
+        avatar
+      }
+      text
+    }
+  }
+`;
+
 export default ({ navigation }) => {
-  const RoomInfo = navigation.getParam("RoomInfo");
+  const roomInfo = navigation.getParam("roomInfo");
   const [message, setMessage] = useState("");
-  const [RoomId, setRoomId] = useState(RoomInfo.RoomId)
+  const [roomId, setRoomId] = useState(roomInfo.roomId)
 
   const onChangeText = text => setMessage(text);
 
   const [sendMessageMutation] = useMutation(SEND_MESSAGE, {
     variables: {
       message,
-      roomId: RoomId,
-      toId: RoomInfo.ToId
-    }, refetchQueries: () => [{ query: GET_MESSAGES }]
+      roomId,
+      toId: roomInfo.toId
+    }
+    // , refetchQueries: [{
+    //   query: GET_MESSAGES, variables: {
+    //   roomId
+    // }}]
   });
 
-  const { data, error } = useQuery(GET_MESSAGES, {
+  const { data: { getMessages : oldMessages }, loading, error } = useQuery(GET_MESSAGES, {
     variables: {
-      RoomId
+      roomId
     }
   });
+
+  const { data: notificateMsg } = useSubscription(NEW_MESSAGE, {
+    variables: {
+      roomId
+    }
+  })
+
+  const [totalMessage, setTotalMessage] = useState(oldMessages || []);
+
+  const handleMessage = () => { 
+    if (notificateMsg !== undefined) {
+      setTotalMessage([...totalMessage,notificateMsg.notificateMsg]);
+    }
+  }
+
+  useEffect(() => { 
+    handleMessage();
+  },[notificateMsg])
   
   const onSubmit = async () => {
     if (message === "") {
@@ -68,8 +110,9 @@ export default ({ navigation }) => {
 
 
   return (
-    <Suspense fallback={<Loader/>}>
+    loading ? <Loader /> : 
       <KeyboardAvoidingView style={{ flex: 1 }} enabled behavior="padding">
+      {/* <SafeAreaView> */}
       <ScrollView
         contentContainerStyle={{
           paddingVertical: 50,
@@ -78,11 +121,13 @@ export default ({ navigation }) => {
           alignItems: "center"
           }}
       >
-        {data.getMessages.map((message)=>{
+          {/* {totalMessage.map((message) => {
           return(
             <View key={message.id} style={{marginBottom:15}}><Text>{message.text}</Text></View>
           )
-        })}
+        })} */}
+          <MessageBubble text='안녕' />
+          
         <TextInput
         placeholder="Type a message"
         style={{
@@ -99,7 +144,7 @@ export default ({ navigation }) => {
         onSubmitEditing={onSubmit}
       />
           </ScrollView>
+      {/* </SafeAreaView> */}
     </KeyboardAvoidingView >
-      </Suspense>
   );
 }

@@ -30,9 +30,7 @@ export default ({ navigation }) => {
     }
   };
   return (
-    <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-      }>
+    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
       {loading ? <Loader /> : data && data.me && <UserProfile {...data.me} navigation={navigation}/>}
     </ScrollView>
   );

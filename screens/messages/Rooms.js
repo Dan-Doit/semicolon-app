@@ -6,7 +6,7 @@ import { useQuery } from "react-apollo-hooks";
 import Constants from "../../Constants";
 import { gql } from "apollo-boost";
 
-const GET_ROOMS = gql`
+export const GET_ROOMS = gql`
   {
   seeRooms{
     id
@@ -14,6 +14,20 @@ const GET_ROOMS = gql`
       id
       username
       avatar
+    }
+    messages{
+      id
+      to{
+        id
+        username
+        avatar
+      }
+      from{
+        id
+        username
+        avatar
+      }
+      text
     }
   }
 }
@@ -78,14 +92,22 @@ export default ({ navigation }) => {
     }
   };
   
-  return (loading ? Loader : 
-    (
-    <Container>
-      <ScrollView style={{ flex: 1, paddingTop:40 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+  return (loading ? <Loader /> : 
+    (<Container>
+      <ScrollView style={{ flex: 0.8, paddingTop:40 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
       <RoomContainer>
                       {data.seeRooms.map((room) => { 
           return(
-              <Touchable key={room.id} onPress={() => navigation.navigate('Message', { roomInfo: {roomId : room.id, toId : room.participants[1].id } })}>
+            <Touchable key={room.id} onPress={() => navigation.navigate('MessageContainer', {
+              roomInfo:
+              {
+                roomId: room.id,
+                toId: room.participants[1].id,
+                userName : room.participants[1].username,
+                Im: room.participants[0].id,
+                messages:room.messages
+              }
+            })}>
               <RoomView>
                 <ImageWrapper>
           <Image

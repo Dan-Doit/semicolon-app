@@ -203,7 +203,7 @@ const UserProfile = ({
               {isSelf ? (<TouchableOpacity onPress={useLogOut()}><Text>로그아웃</Text></TouchableOpacity>)
                 :
                 (<TouchableOpacity onPress={Following}>
-                  {isFollowingS ? <Text>Follow</Text> : <Text>UnFollow</Text>}
+                  {isFollowingS ? <Text>UnFollow</Text> : <Text>Follow</Text>}
                 </TouchableOpacity>)}
             </Button1>
             {/*                          */}

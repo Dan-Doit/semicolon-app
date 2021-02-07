@@ -28,3 +28,4 @@ yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error 
 yarn add apollo-link-ws subscriptions-transport-ws apollo-utilities
 yarn add react-native-svg
 yarn add react-native-size-matters
+yarn add react-native-gifted-chat

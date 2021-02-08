@@ -48,7 +48,6 @@ export default ({ navigation }) => {
 
             setLoading(true);
             const { data: { requestSecret } } = await requestSecretMutation();
-            console.log(requestSecret);
             if (requestSecret) {
                 Alert.alert("이메일을 확인해주세요");
                 navigation.navigate("Confirm", { email: value });

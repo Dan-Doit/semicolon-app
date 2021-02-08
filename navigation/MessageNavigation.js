@@ -1,11 +1,11 @@
 import { createStackNavigator } from "react-navigation-stack";
-import Rooms from "../screens/messages/Rooms";
+import RoomsContainer from "../screens/messages/Rooms";
 import MessageContainer from "../screens/messages/Message";
 import styles from "../styles";
 
 export default createStackNavigator({
-  Rooms: {
-    screen: Rooms,
+  RoomsContainer: {
+    screen: RoomsContainer,
     navigationOptions: {
       headerBackTitle: " ",
       headerTintColor: styles.blackColor,

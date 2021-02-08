@@ -49,3 +49,12 @@ export const USER_FRAGMENT = gql`
   }
   ${POST_FRAGMENT}
 `;
+
+export const ME = gql`
+  {
+    me {
+      ...UserParts
+    }
+  }
+  ${USER_FRAGMENT}
+`;

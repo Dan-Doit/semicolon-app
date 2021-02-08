@@ -1,9 +1,8 @@
-import React, {useState, Suspense,useCallback, useEffect } from "react";
-import { View, Text, ScrollView, TextInput, KeyboardAvoidingView } from "react-native";
+import React, {useState, useEffect } from "react";
+import { View } from "react-native";
 import gql from "graphql-tag";
-import { useQuery, useMutation, useSubscription } from "react-apollo-hooks";
-import ChatRoom from "./ChatRoom";
-import { GET_ROOMS } from "../Rooms";
+import { useMutation, useSubscription } from "react-apollo-hooks";
+import { GET_ROOMS } from "../Rooms/RoomsContainer";
 import { GET_MESSAGES } from "./MessageContainer";
 import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat'
 import { FontAwesome,FontAwesome5 } from "@expo/vector-icons";
@@ -39,21 +38,7 @@ const NEW_MESSAGE = gql`
 
 export default ({ roomId, Im, toId, data }) => {
 
-  const [message, setMessage] = useState("");
-  const [totalMessage, setTotalMessage] = useState(data);
-
-  const [sendMessageMutation] = useMutation(SEND_MESSAGE, {
-    variables: {
-      message,
-      roomId,
-      toId
-      }, refetchQueries: [{
-          query: GET_MESSAGES, variables: {
-          roomId
-          }
-      }, { query: GET_ROOMS }]
-  });
-
+    const [sendMessageMutation] = useMutation(SEND_MESSAGE);
     const { data: notificateMsg } = useSubscription(NEW_MESSAGE, {
         variables: {
             roomId
@@ -65,28 +50,47 @@ export default ({ roomId, Im, toId, data }) => {
         handleMessage();
     },[notificateMsg])
     
-    const onSend = async (messages) => {
-        console.log("????????????????????"+messages[0].text)
-        if (message === "") {
-            return;
-        }
+    const onSend = async (messages,roomId,toId) => {
+
         try {
-            setMessage(messages[0].text);
-            await sendMessageMutation();
+            const a = messages[0].text;
+            const b = roomId;
+            const c = toId;
+            await sendMessageMutation({
+            variables: {
+            message:a,
+            roomId:b,
+            toId:c
+            }, refetchQueries: [{
+                query: GET_MESSAGES, variables: {
+                roomId
+                }
+            }, { query: GET_ROOMS }]
+            });
+            
         } catch (e) {
             console.log(e);
         }
     };
     
-    
     const handleMessage = () => { 
-      if (notificateMsg !== undefined) {
-        setTotalMessage([...totalMessage,notificateMsg.notificateMsg]);
+        if (notificateMsg !== undefined) {
+            const init = {
+            _id: messages.length+1,
+            text: notificateMsg.notificateMsg.text,
+            createdAt: notificateMsg.notificateMsg.createdAt,
+            user: {
+                _id: notificateMsg.notificateMsg.from.id,
+                name: notificateMsg.notificateMsg.from.username,
+                avatar: notificateMsg.notificateMsg.from.avatar,
+            },
+            }  
+            setMessages([init,...messages])
       }
     }
         
 
-    const into = totalMessage.map((data, index) => {
+    const into = data.map((data, index) => {
         const m = {
             _id: index,
             text: data.text,
@@ -103,7 +107,7 @@ export default ({ roomId, Im, toId, data }) => {
     const [messages, setMessages] = useState(into.reverse() || []);
 
     useEffect(() => {
-    setMessages(into)
+        messages
     }, [])
 
         const renderSend = (props) => { 
@@ -145,7 +149,7 @@ export default ({ roomId, Im, toId, data }) => {
     return (
     <GiftedChat
           messages={messages}
-          onSend={messages => onSend(messages)}
+          onSend={messages => onSend(messages,roomId,toId)}
           user={{
               _id: Im,
           }}

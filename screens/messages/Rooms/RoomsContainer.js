@@ -51,12 +51,14 @@ export default ({ navigation }) => {
     }
   };
   
-  return (loading ? <Loader /> : (
-    <>
-    <SendChatPresenter data={data} navigation={navigation} />
+  return (meloading ? <Loader /> : (
+    loading ? <Loader /> :
+      <>
+    < SendChatPresenter data={data} medata = { medata } navigation = { navigation } />
     <ScrollView style={{ flex: 0.8 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
       <RoomsPresenter data={data} medata={medata} navigation={navigation} />
     </ScrollView>
-  </>)
+  </>
+    )
   )
 };

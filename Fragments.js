@@ -40,6 +40,17 @@ export const USER_FRAGMENT = gql`
     isFollowing
     isSelf
     bio
+    rooms {
+      id
+      participants{
+        id
+      }
+    }
+    following{
+      id
+      username
+      avatar
+    }
     followingCount
     followersCount
     postsCount

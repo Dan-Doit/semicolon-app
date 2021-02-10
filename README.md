@@ -29,3 +29,5 @@ yarn add apollo-link-ws subscriptions-transport-ws apollo-utilities
 yarn add react-native-svg
 yarn add react-native-size-matters
 yarn add react-native-gifted-chat
+yarn add expo-permissions
+yarn add expo-notifications

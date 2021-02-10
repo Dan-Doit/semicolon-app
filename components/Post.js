@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Platform } from "react-native";
 import styled from "styled-components/native";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
@@ -7,7 +7,7 @@ import Swiper from "react-native-swiper";
 import { gql } from "apollo-boost";
 import constants from "../Constants";
 import styles from "../styles";
-import { useMutation } from "react-apollo-hooks";
+import { useMutation, useSubscription } from "react-apollo-hooks";
 import { withNavigation } from "react-navigation";
 
 export const TOGGLE_LIKE = gql`
@@ -15,6 +15,13 @@ export const TOGGLE_LIKE = gql`
     toggleLike(postId: $postId)
   }
 `;
+export const SEND_NOTIFICATION = gql`
+  mutation sendNotificate($username:String! $to:String! $from:String $message:String $post:String $state:String!)
+  {
+    sendNotificate(username: $username to: $to from: $from message: $message post:$post state:$state)
+  }
+`;
+
 
 const Container = styled.View`
   margin-bottom: 15px;
@@ -62,16 +69,30 @@ const Post = ({
   caption,
   comments = [],
   isLiked: isLikedProp,
+  me,
   navigation
 }) => {
+
   const [isLiked, setIsLiked] = useState(isLikedProp);
   const [likeCount, setLikeCount] = useState(likeCountProp);
   const [copyCaption, setCopyCaption] = useState(caption)
+ 
   const [toggleLikeMutaton] = useMutation(TOGGLE_LIKE, {
     variables: {
       postId: id
     }
   });
+
+  const [sendNotificateMutation] = useMutation(SEND_NOTIFICATION, ({
+    variables: {
+    username: me.username,
+    to: user.id,
+    from: me.id,
+    post: `${id},${isLiked}`,
+    state: "3"
+    }
+  }));
+
   const handleLike = async () => {
     if (isLiked === true) {
       setLikeCount(l => l - 1);
@@ -80,9 +101,14 @@ const Post = ({
     }
     setIsLiked(p => !p);
     try {
+      await sendNotificateMutation();
       await toggleLikeMutaton();
-    } catch (e) { }
+
+    } catch (e) { 
+      console.log(e)
+    }
   };
+
   return (<Container>
       <Header>
         <Touchable
@@ -128,8 +154,8 @@ const Post = ({
               />
             </IconContainer>
           </Touchable>
-        <Touchable onPress={() => navigation.navigate("CommentDetail", { id })}>
-            <IconContainer>
+          <Touchable onPress={() => navigation.navigate("CommentDetail", { id })}>
+            <IconContainer >
               <FontAwesome
                 color={styles.blackColor}
                 size={24}
@@ -145,8 +171,8 @@ const Post = ({
           <Bold>{user.username}</Bold> {caption}
         </Caption>
       <Touchable onPress={() => navigation.navigate("CommentDetail", { id })}>
-      {/* <Touchable> */}
-         {comments.length> 0?<CommentCount>댓글 {comments.length}개 더보기</CommentCount>:<CommentCount>첫번째 댓글의 주인공이 되어주세요</CommentCount>}
+
+         {comments.length> 0?<CommentCount>댓글 {comments.length}개 더보기</CommentCount>:<CommentCount>첫번째 댓글의 주인공이 되어주세요!</CommentCount>}
 
         </Touchable>
       </InfoContainer>

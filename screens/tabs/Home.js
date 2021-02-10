@@ -12,6 +12,10 @@ export const FEED_QUERY = gql`
     seeFeed {
       ...PostParts
     }
+    me{
+      id
+      username
+    }
   }
   ${POST_FRAGMENT}
 `;
@@ -39,7 +43,7 @@ export default () => {
       ) : (
           data &&
           data.seeFeed &&
-          data.seeFeed.map(post => <Post key={post.id} {...post} />)
+          data.seeFeed.map(post => <Post key={post.id} {...post} me={data.me} />)
         )}
       </ScrollView>
   );

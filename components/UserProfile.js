@@ -123,6 +123,7 @@ const UNFOLLOW = gql`
 
 const UserProfile = ({
   id,
+  username,
   avatar,
   postsCount,
   followersCount,
@@ -132,11 +133,12 @@ const UserProfile = ({
   navigation,
   isFollowing,
   isSelf,
-  username,
   firstName,
   lastName,
 
 }) => {
+
+  const me = { id, username }
   const [isGrid, setIsGrid] = useState(true);
   const toggleGrid = () => setIsGrid(i => !i);
   const [editProfile, setEditProfile] = useState(false);
@@ -237,7 +239,7 @@ const UserProfile = ({
         return (<SquarePhoto key={p.id} {...p} />)
       })}</SquareBox> : <>
           {posts && posts.map(p => {
-            return (<Post key={p.id} {...p} />)
+            return (<Post key={p.id} {...p} me={me} />)
           })}</>}
     </View>) : (
       <EditProfile navigation={navigation} userAvatar={avatar} userInfo={userInfo} setUserInfo={setUserInfo} setEditProfile={setEditProfile} />

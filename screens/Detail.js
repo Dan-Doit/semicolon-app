@@ -11,6 +11,10 @@ const POST_DETAIL = gql`
     seeFullPost(id: $id) {
       ...PostParts
     }
+    me {
+      id
+      username
+    }
   }
   ${POST_FRAGMENT}
 `;
@@ -24,7 +28,7 @@ export default ({ navigation }) => {
       {loading ? (
         <Loader />
       ) : (
-        data && data.seeFullPost && <Post {...data.seeFullPost} />
+        data && data.seeFullPost && <Post {...data.seeFullPost} me={data.me} />
       )}
     </ScrollView>
   );

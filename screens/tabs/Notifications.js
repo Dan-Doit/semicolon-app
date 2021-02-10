@@ -5,20 +5,32 @@ import { USER_FRAGMENT } from "../../Fragments";
 import Loader from "../../components/Loader";
 import { useQuery } from "react-apollo-hooks";
 import UserNotification from "../../components/UserNotification";
-import styled from "styled-components/native";
 
-export const ME = gql`
-  {
-    me {
-      ...UserParts
+export const GET_NOTIFICATION = gql`
+{
+  getNotificate {
+    id
+    from {
+      id
+      username
+      avatar
     }
+    post {
+      id
+    }
+    message {
+      id
+    }
+    createdAt
   }
-  ${USER_FRAGMENT}
+}
 `;
 
 export default ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { loading, data, refetch } = useQuery(ME);
+  const { loading, data, refetch } = useQuery(GET_NOTIFICATION);
+  const [Notis, setNotis] = useState([]);
+
   const refresh = async () => {
     try {
       setRefreshing(true);
@@ -29,11 +41,12 @@ export default ({ navigation }) => {
       setRefreshing(false);
     }
   };
+
   return (
     <ScrollView refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={refresh} />
       }>
-      {loading ? <Loader /> : data && data.me && <UserNotification {...data.me} navigation={navigation}/>}
+      {loading ? <Loader /> : data && <UserNotification Notifications={data} navigation={navigation}/>}
     </ScrollView>
   );
 };

@@ -1,151 +1,114 @@
 import React, { useState } from "react";
-import { Image, View, TouchableOpacity } from "react-native";
-import styled from "styled-components/native";
-import { Ionicons } from "@expo/vector-icons";
 import PropTypes from "prop-types";
-import styles from "../styles";
-import { Platform } from "@unimodules/core";
-import constants from "../Constants";
-import SquarePhoto from "./SquarePhoto";
-import Post from "./Post";
-import { useLogOut } from "../AuthContext";
-import EditProfile from "./EditProfile";
-import { useMutation } from "react-apollo-hooks";
-import { gql } from "apollo-boost";
-import { ME } from "../screens/tabs/Profile";
-import { FEED_QUERY } from "../screens/home/Home";
-
-const ProfileHeader = styled.View`
-  padding: 20px;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const NameContainer = styled.View`
-  padding-vertical: 5px;
-  margin-top: -10px;
-  width:${constants.width / 2.2}
-  height :${constants.height / 10};
-`;
-
-const Text = styled.Text`
-margin-top : 5px;
-  color: black;
-  text-align: center;
-  font-weight: 600;
-`;
+import { FlatList } from "react-native";
+import {
+  Container,
+  Card,
+  UserInfo,
+  UserImgWrapper,
+  UserImg,
+  UserInfoText,
+  UserName,
+  PostTime,
+  MessageText,
+  TextSection
+} from '../screens/messages/MessageStyles';
 
 
-const FOLLOW = gql`
-  mutation follow($id: String!) {
-    follow(id: $id)
-  }
-`;
+const caculateTime = (time) => { 
+    if (time !== undefined) {
+        const date = new Date();
+        const getTime = `${time}`.split('T');
+        const days = getTime[0].split('-');
+        const times = getTime[1].substring(0, 8).split(':');
+        if (date.getFullYear() == days[0]) {
+            if (date.getMonth() +1 == days[1]) {
+                if (date.getDate() == days[2]) {
+                    // plus 10 because UK has different time with KR
+                    if (date.getHours() == parseInt(times[0])+9) { 
+                        if (date.getMinutes() == times[1]) { 
+                                // cv
+                             return `${parseInt(date.getSeconds()) - parseInt(times[2])} 초전`
+                        }else return `${parseInt(date.getMinutes()) - parseInt(times[1])} 분전`
+                    }else return `${parseInt(date.getHours()) - parseInt(times[0])+9} 시간전`
+                } else return `${parseInt(date.getDay()) - parseInt(days[2])} 일전`;
+            } else return `${parseInt(date.getMonth()+1) - parseInt(days[1])} 달전`;
+        } else return `${parseInt(date.getFullYear()) - parseInt(days[0])} 년전`;
 
-const UNFOLLOW = gql`
-  mutation unfollow($id: String!) {
-    unfollow(id: $id)
-  }
-`;
+    }
+    return null;
+}
 
 
-const UserNotification = ({
-  id,
-  avatar,
-  postsCount,
-  followersCount,
-  followingCount,
-  bio,
-  posts,
-  navigation,
-  isFollowing,
-  isSelf,
-  username,
-  firstName,
-  lastName,
-
-}) => {
-  console.log(username);
-  const [isGrid, setIsGrid] = useState(true);
-
-    const [isFollowingS, setIsFollowing] = useState(isFollowing);
-    const [followMutation] = useMutation(FOLLOW, {
-        variables: { id },
-        refetchQueries: [{ query: ME, query: FEED_QUERY }]
-    });
-    const [unfollowMutation] = useMutation(UNFOLLOW, {
-        variables: { id },
-        refetchQueries: [{ query: ME, query: FEED_QUERY }]
-    });
-
-    const Following = async () => {
-        if (isFollowingS === true) {
-            setIsFollowing(false);
-            unfollowMutation();
-        } else {
-            setIsFollowing(true);
-            followMutation();
+const UserNotification = ({ Notifications }) => {
+    
+    const Notis = Notifications.getNotificate.map((noti) => {
+        if (noti.message === null && noti.from !== null) {
+            return {
+                id: noti.from.id,
+                userName: noti.from.username,
+                userImg: noti.from.avatar,
+                messageTime: caculateTime(noti.createdAt),
+                messageText: `${noti.from.username}님이 나에게 좋아요를 눌렀습니다.`,
+                post: null,
+                message: null
+            }
+        } else if (noti.post === null && noti.from !== null) {
+            return {
+                id: noti.from.id,
+                userName: noti.from.username,
+                userImg: noti.from.avatar,
+                messageTime: caculateTime(noti.createdAt),
+                messageText: `${noti.from.username}님이 나에게 메세지를 보냈습니다.`,
+                post: null,
+                message: null
+            }
+        } else if (noti.post === null && noti.message === null) {
+            return {
+                id: noti.from.id,
+                userName: noti.from.username,
+                userImg: noti.from.avatar,
+                messageTime: caculateTime(noti.createdAt),
+                messageText: `${noti.from.username}님이 나를 팔로우 하였습니다..`,
+                post: null,
+                message: null
+            }
         }
-    };
-  return (
-    <View>
-      <ProfileHeader>
-        <Image
-          style={{ height: 40, width: 40, borderRadius: 20 }}
-          source={{ uri: avatar }}
-        />
-        <Text>{username}님이 회원님의 게시물에 좋아요를 눌렀습니다.</Text>      
-        <TouchableOpacity onPress={Following}>
-            {isFollowingS ? <Text>UnFollow</Text> : <Text>Follow</Text>}
-        </TouchableOpacity>
+    });
 
-        </ProfileHeader>
-      </View>
+  return (
+    <Container>
+            <FlatList
+              data={Notis.reverse()}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => (
+                    <Card onPress={() => navigation.navigate('MessageContainer', {
+                        roomInfo:
+                        {
+                            roomId: item.id,
+                            toId: item.toId,
+                            userName: item.userName,
+                            Im: item.Im
+                        }
+                    })}
+                    >
+                        <UserInfo>
+                            <UserImgWrapper>
+                                <UserImg source={{ uri: item.userImg }} />
+                            </UserImgWrapper>
+                            <TextSection>
+                                <UserInfoText>
+                                    <UserName>{item.userName}</UserName>
+                                    <PostTime>{item.messageTime}</PostTime>
+                                </UserInfoText>
+                                <MessageText>{item.messageText}</MessageText>
+                            </TextSection>
+                        </UserInfo>
+                    </Card>
+                )}
+            />
+        </Container>
   ) 
 };
 
-UserNotification.propTypes = {
-  id: PropTypes.string.isRequired,
-  avatar: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired,
-  fullName: PropTypes.string.isRequired,
-  isFollowing: PropTypes.bool.isRequired,
-  isSelf: PropTypes.bool.isRequired,
-  bio: PropTypes.string.isRequired,
-  followingCount: PropTypes.number.isRequired,
-  followersCount: PropTypes.number.isRequired,
-  postsCount: PropTypes.number.isRequired,
-  posts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      user: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        avatar: PropTypes.string,
-        username: PropTypes.string.isRequired
-      }).isRequired,
-      files: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          url: PropTypes.string.isRequired
-        })
-      ).isRequired,
-      likeCount: PropTypes.number.isRequired,
-      isLiked: PropTypes.bool.isRequired,
-      comments: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          text: PropTypes.string.isRequired,
-          user: PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            username: PropTypes.string.isRequired
-          }).isRequired
-        })
-      ).isRequired,
-      caption: PropTypes.string.isRequired,
-      location: PropTypes.string,
-      createdAt: PropTypes.string.isRequired
-    })
-  )
-};
 export default UserNotification;

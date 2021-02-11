@@ -5,7 +5,14 @@ import { useMutation, useSubscription } from "react-apollo-hooks";
 import { GET_ROOMS } from "../Rooms/RoomsContainer";
 import { GET_MESSAGES } from "./MessageContainer";
 import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat'
-import { FontAwesome,FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+
+export const SEND_NOTIFICATION = gql`
+  mutation sendNotificate($username:String! $to:String! $from:String $message:String $post:String $state:String!)
+  {
+    sendNotificate(username: $username to: $to from: $from message: $message post:$post state:$state)
+  }
+`;
 
 const SEND_MESSAGE = gql`
   mutation sendMessage($message: String! $roomId:String! $toId:String!) {
@@ -36,7 +43,7 @@ const NEW_MESSAGE = gql`
   }
 `;
 
-export default ({ roomId, Im, toId, data }) => {
+export default ({ roomId, Im, toId, data, myName }) => {
     
     const [sendMessageMutation] = useMutation(SEND_MESSAGE);
     const { data: notificateMsg } = useSubscription(NEW_MESSAGE, {
@@ -44,10 +51,18 @@ export default ({ roomId, Im, toId, data }) => {
             roomId
         }
     });
-  
+
+    const [sendNotificateMutation] = useMutation(SEND_NOTIFICATION, ({
+    variables: {
+    username: myName,
+    to: toId,
+    state: "2"
+    }
+    }));
+       
     useEffect(() => { 
         handleMessage();
-    },[notificateMsg])
+    }, [notificateMsg])
     
     const onSend = async (messages,roomId,toId) => {
 
@@ -72,7 +87,7 @@ export default ({ roomId, Im, toId, data }) => {
         }
     };
     
-    const handleMessage = () => { 
+    const handleMessage = async () => { 
 
         if (notificateMsg !== undefined) {
             const init = {
@@ -85,7 +100,8 @@ export default ({ roomId, Im, toId, data }) => {
                 avatar: notificateMsg.notificateMsg.from.avatar,
             },
             }  
-            setMessages([init,...messages])
+            setMessages([init, ...messages])
+            await sendNotificateMutation();
       }
     }
         

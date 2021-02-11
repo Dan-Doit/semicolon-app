@@ -44,20 +44,20 @@ export default ({ navigation }) => {
   
   if (roomInfo.roomId !== "needNewRoom") {
 
-    const { roomId, Im, toId } = roomInfo;
+    const { roomId, Im, toId, myName } = roomInfo;
     const { data, loading } = useQuery(GET_MESSAGES, {
       variables: {
         roomId
       }
     });
     return (
-    loading ? <Loader /> : (<MessagePresenter roomId={roomId} Im={Im} toId={toId} data={data.getMessages} />)); 
+      loading ? <Loader /> : (<MessagePresenter roomId={roomId} Im={Im} toId={toId} data={data.getMessages} myName={myName} />)); 
 
   } else { 
 
     const [loading, setLoading] = useState(true);
     const [roomId, setRoomId] = useState(null);
-    const { Im, toId } = roomInfo;
+    const { Im, toId, myName } = roomInfo;
     const [messageMutation] = useMutation(SEND_MESSAGE, {
       variables: {
         toId,
@@ -76,7 +76,7 @@ export default ({ navigation }) => {
     }, [])
 
     return loading ? <Loader /> : (
-      <MessagePresenter roomId={roomId} Im={Im} toId={toId} data={[]} />
+      <MessagePresenter roomId={roomId} Im={Im} toId={toId} data={[]} myName={myName} />
     ); 
 
   }

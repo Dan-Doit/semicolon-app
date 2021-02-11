@@ -40,10 +40,11 @@ const caculateTime = (time) => {
 }
 
 
-const UserNotification = ({ Notifications }) => {
+const UserNotification = ({ Notifications, navigation }) => {
     
     const Notis = Notifications.getNotificate.map((noti) => {
-        if (noti.message === null && noti.from !== null) {
+        
+        if (noti.message === null && noti.from !== null && noti.post !== null) {
             return {
                 id: noti.from.id,
                 userName: noti.from.username,
@@ -51,9 +52,12 @@ const UserNotification = ({ Notifications }) => {
                 messageTime: caculateTime(noti.createdAt),
                 messageText: `${noti.from.username}님이 나에게 좋아요를 눌렀습니다.`,
                 post: null,
-                message: null
+                message: null,
+                state: "Detail",
+                roomInfo: {id: noti.post.id}
             }
-        } else if (noti.post === null && noti.from !== null) {
+            
+        } else if (noti.post === null && noti.from !== null && noti.message !== null) {
             return {
                 id: noti.from.id,
                 userName: noti.from.username,
@@ -61,7 +65,8 @@ const UserNotification = ({ Notifications }) => {
                 messageTime: caculateTime(noti.createdAt),
                 messageText: `${noti.from.username}님이 나에게 메세지를 보냈습니다.`,
                 post: null,
-                message: null
+                message: null,
+                state: "MessageContainer"
             }
         } else if (noti.post === null && noti.message === null) {
             return {
@@ -69,9 +74,11 @@ const UserNotification = ({ Notifications }) => {
                 userName: noti.from.username,
                 userImg: noti.from.avatar,
                 messageTime: caculateTime(noti.createdAt),
-                messageText: `${noti.from.username}님이 나를 팔로우 하였습니다..`,
+                messageText: `${noti.from.username}님이 나를 팔로우 하였습니다.`,
                 post: null,
-                message: null
+                message: null,
+                state: "UserDetail",
+                roomInfo: {username: noti.from.username}
             }
         }
     });
@@ -82,15 +89,8 @@ const UserNotification = ({ Notifications }) => {
               data={Notis.reverse()}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
-                    <Card onPress={() => navigation.navigate('MessageContainer', {
-                        roomInfo:
-                        {
-                            roomId: item.id,
-                            toId: item.toId,
-                            userName: item.userName,
-                            Im: item.Im
-                        }
-                    })}
+                    <Card onPress={() => navigation.navigate(item.state, item.roomInfo
+                    )}
                     >
                         <UserInfo>
                             <UserImgWrapper>

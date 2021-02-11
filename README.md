@@ -32,3 +32,4 @@ yarn add react-native-size-matters
 yarn add react-native-gifted-chat
 yarn add expo-permissions
 yarn add expo-notifications
+yarn add react-native-gesture-handler

@@ -41,6 +41,7 @@ export default ({ data, medata, navigation }) => {
 
     const Rooms = data.seeRooms.map((room) => {
         const me = medata.me.id;
+        const myName = medata.me.username;
         const participant = room.participants.filter((person) => me !== person.id)[0]
         const roomNumber = room.messages.length - 1 < 0 ? 0 : room.messages.length - 1
         return {
@@ -50,6 +51,7 @@ export default ({ data, medata, navigation }) => {
             messageTime: caculateTime(room.messages[roomNumber].createdAt),
             messageText: room.messages[roomNumber].text,
             Im: me,
+            myName,
             toId: participant.id
         }
     })
@@ -66,7 +68,8 @@ export default ({ data, medata, navigation }) => {
                             roomId: item.id,
                             toId: item.toId,
                             userName: item.userName,
-                            Im: item.Im
+                            Im: item.Im,
+                            myName: item.myName
                         }
                     })}
                     >

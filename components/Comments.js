@@ -1,19 +1,23 @@
 import React, { useState } from "react";
-import { Image, TextInput, ScrollView, KeyboardAvoidingView } from "react-native";
+import { Image, TextInput, ScrollView } from "react-native";
 import styled from "styled-components/native";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import PropTypes from "prop-types";
-import Swiper from "react-native-swiper";
 import { gql } from "apollo-boost";
 import { useMutation } from "react-apollo-hooks";
 import { withNavigation } from "react-navigation";
 import styles from "../styles";
 import useInput from "../hooks/useInput";
+import CommentPresenter from "./CommentPresenter";
+import { FEED_QUERY } from "../screens/home/Home";
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import CommentDelete from './CommentDelete'
+
 
 const Container = styled.View`
   margin-bottom: 15px;
+  flex:1;
 `;
 const Header = styled.View`
   padding: 15px;
@@ -38,10 +42,26 @@ const Text = styled.Text`
 const Caption = styled.Text`
 `;
 const Div = styled.View`
-  flex-direction: row;
-  padding: 15px;
-  flex-direction: row;
-  align-items: center;
+    width: 100%;
+    flexDirection: row;
+    alignItems: center;
+    padding: 7px;
+`;
+
+const Div2 = styled.View`
+  
+    flexDirection: row;
+    alignSelf: flex-end;
+    position:absolute;
+    left:360
+    bottom:13
+`
+const Div3 = styled.View`
+    
+    width: 100%;
+    flexDirection: row;
+    alignItems: center;
+    padding: 7px;
 `;
 
 const ADD_COMMENT = gql`
@@ -56,26 +76,37 @@ const ADD_COMMENT = gql`
   }
 `;
 
+
+
+export const COMMENT_LIKE = gql`
+  mutation commentLikes($commentId: String!) {
+    commentLikes(commentId: $commentId)
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation deleteComment($id: String!) {
+    deleteComment(id: $id) 
+  }
+`;
+
+
+
 const Comments = ({
   id,
   user,
   caption,
   comments = [],
-  navigation
+  navigation,
+  commentId
 }) => {
   const [selfComments, setSelfComments] = useState();
-  // const [isCommenting, setIsCommenting] = useState(false);
   const commentInput = useInput("");
   const [addCommentMutation] = useMutation(ADD_COMMENT, {
-    variables: { postId: id, text: commentInput.value }
+    variables: { postId: id, text: commentInput.value }, refetchQueries: [{query:FEED_QUERY}]
   });
+
   const submitComment = async () => {
-    // if (commentInput.value !== "" && isCommenting === false) {
-    //   setIsCommenting(true);
-    // // }
-    // const { which } = event;
-    // if (which === 13) {
-    //   event.preventDefault();
       try {
         const {
           data: { addComment }
@@ -107,44 +138,50 @@ const Comments = ({
         </Touchable>
       </Header>
 
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView  >
         
       <ScrollView style={{flex: 1, padding:10}} >
           
-        {comments.map(comment => (
-      
-       <Touchable onPress={() => navigation.navigate("UserDetail", { username: comment.user.username })}>
-            <Div>
+          {comments.map(comment => (
+        <Swipeable renderRightActions={() => <CommentDelete id={comment.id} comments={comment} setSelfComments={setSelfComments}  />}>
+        <Touchable onPress={() => navigation.navigate("UserDetail", { username: comment.user.username })}>
+          <Div>
                
             <Image
               style={{ height: 30, width: 30, borderRadius: 15 }}
               source={{ uri: comment.user.avatar }}
             />
-            <Bold>{comment.user.username}</Bold>
-                 
-            <Text> {comment.text}</Text>
-  </Div>
+            <Bold>{comment.user.username}</Bold>  
+                  <Text> {comment.text}</Text>
+            <Div2>
+            <CommentPresenter commentId={comment.id} isCommented={comment.isCommented } />
+           </Div2>
+          </Div>          
         </Touchable>
-                
-        ))}
-   
-         <TextInput
+        </Swipeable>
+            
+          ))}
+         
+          <Div3>
+            <TextInput
             value={commentInput.value}
             onChangeText={commentInput.onChange}
-            placeholder={"댓글 달기..."}
-            // onChangeText={onChangeText}
-            style={{
-              marginLeft: 10,
+            placeholder={"  댓글 달기..."}
+                 
+              style={{      
+              marginLeft: 3,
               height: 50,
               backgroundColor: "white",
-              width: "95%",
-              borderRadius: 10,
-            }}
-          />
-          <TouchableOpacity onPress={() => submitComment()} style={{width: 50}}><Text style={{color: styles.blueColor}}>게시</Text></TouchableOpacity>
+              width: "87%",
+              borderRadius: 15,
+              }}
+              
+              />
+              <TouchableOpacity onPress={() => submitComment()} style={{width: 50, left:15}}><Text style={{color: styles.blueColor}}>게시</Text></TouchableOpacity>
+            </Div3>
+
           </ScrollView>
       </KeyboardAwareScrollView>
-      {/* </KeyboardAvoidingView> */}
       </Container>
         
   )

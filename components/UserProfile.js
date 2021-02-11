@@ -10,10 +10,12 @@ import SquarePhoto from "./SquarePhoto";
 import Post from "./Post";
 import { useLogOut } from "../AuthContext";
 import EditProfile from "./EditProfile";
-import { useMutation } from "react-apollo-hooks";
+import { useMutation, useQuery } from "react-apollo-hooks";
 import { gql } from "apollo-boost";
 import { ME } from "../screens/tabs/Profile";
 import { FEED_QUERY } from "../screens/home/Home";
+import { SEND_NOTIFICATION } from "./Post";
+
 
 const ProfileHeader = styled.View`
   padding: 20px;
@@ -120,10 +122,17 @@ const UNFOLLOW = gql`
     unfollow(id: $id)
   }
 `;
+const MY = gql`
+  {
+    me {
+      id
+      username
+    }    
+  }
+`;
 
 const UserProfile = ({
   id,
-  username,
   avatar,
   postsCount,
   followersCount,
@@ -133,12 +142,16 @@ const UserProfile = ({
   navigation,
   isFollowing,
   isSelf,
+  username,
   firstName,
-  lastName,
+  lastName
 
 }) => {
-
-  const me = { id, username }
+    const me = {
+    id: id,
+    username: username
+  }
+  const { data, loading } = useQuery(MY);
   const [isGrid, setIsGrid] = useState(true);
   const toggleGrid = () => setIsGrid(i => !i);
   const [editProfile, setEditProfile] = useState(false);
@@ -149,6 +162,15 @@ const UserProfile = ({
       lastName,
       bio,
   });
+  const [sendNotificateMutation] = useMutation(SEND_NOTIFICATION, ({
+    variables: {
+    username: data.me.username,
+    to: id,
+    from: `${data.me.id},${isFollowing}`,
+    state: "1"
+    }
+  }));
+
     const [isFollowingS, setIsFollowing] = useState(isFollowing);
     const [followMutation] = useMutation(FOLLOW, {
         variables: { id },
@@ -164,10 +186,14 @@ const UserProfile = ({
             setIsFollowing(false);
             unfollowMutation();
         } else {
-            setIsFollowing(true);
-            followMutation();
+          setIsFollowing(true);
+          followMutation();
+          sendNotificateMutation();
         }
-    };
+  };
+  
+
+
   return (!editProfile ? (
     <View>
       <ProfileHeader>

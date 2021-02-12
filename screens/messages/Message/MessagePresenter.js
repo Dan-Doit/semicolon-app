@@ -54,9 +54,11 @@ export default ({ roomId, Im, toId, data, myName }) => {
 
     const [sendNotificateMutation] = useMutation(SEND_NOTIFICATION, ({
     variables: {
-    username: myName,
-    to: toId,
-    state: "2"
+        from: Im,
+        to: toId,
+        username: myName,
+        message:roomId,
+        state: "2"
     }
     }));
        
@@ -164,6 +166,7 @@ export default ({ roomId, Im, toId, data, myName }) => {
     
     return (
     <GiftedChat
+          key={messages.id}
           messages={messages}
           onSend={messages => onSend(messages,roomId,toId)}
           user={{

@@ -10,6 +10,10 @@ export const GET_NOTIFICATION = gql`
 {
   getNotificate {
     id
+    to{
+      id
+      username
+    }
     from {
       id
       username
@@ -22,6 +26,9 @@ export const GET_NOTIFICATION = gql`
       id
     }
     createdAt
+  }
+  getFollowing{
+    id
   }
 }
 `;

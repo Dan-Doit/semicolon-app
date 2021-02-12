@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FlatList } from "react-native";
 import {
@@ -39,14 +39,20 @@ const caculateTime = (time) => {
     return null;
 }
 
+const messageHandler = (id,following) => { 
+    const arr = following.map((f) => f.id);
+    return(arr.includes(id));
+}
+
 
 const UserNotification = ({ Notifications, navigation }) => {
-    
-    const Notis = Notifications.getNotificate.map((noti) => {
-        
-        if (noti.message === null && noti.from !== null && noti.post !== null) {
+    const [data, setData] = useState([]);
+
+    useEffect(() => { 
+        const Notis = Notifications.getNotificate.map((noti,index) => {
+            if (noti.message === null && noti.from !== null && noti.post !== null) {
             return {
-                id: noti.from.id,
+                id: `${noti.from.id}${index}`,
                 userName: noti.from.username,
                 userImg: noti.from.avatar,
                 messageTime: caculateTime(noti.createdAt),
@@ -57,20 +63,44 @@ const UserNotification = ({ Notifications, navigation }) => {
                 roomInfo: {id: noti.post.id}
             }
             
-        } else if (noti.post === null && noti.from !== null && noti.message !== null) {
+            } else if (noti.post === null && noti.from !== null && noti.message !== null) {
+                let into = "";
+                let information = {};
+                let text = "";
+                if (!messageHandler(noti.from.id, Notifications.getFollowing)) {
+                    // 프로필로 가기
+                    into = "UserDetail";
+                    information = { username: noti.from.username }
+                    text = `${noti.from.username}님이 대화를 원하고있어요!`;
+                } else { 
+                    // 메세지로 가기
+                    into = "MessageContainer"
+                    information = {
+                        roomInfo: {
+                        roomId: noti.message.id,
+                        toId: noti.from.id,
+                        userName: noti.from.username,
+                        Im: noti.to.id,
+                        myName: noti.to.username
+                    }
+                    }
+                    text = `${noti.from.username}님이 나에게 메세지를 보냈습니다.`;
+                }
+
             return {
-                id: noti.from.id,
+                id: `${noti.from.id}${index}`,
                 userName: noti.from.username,
                 userImg: noti.from.avatar,
                 messageTime: caculateTime(noti.createdAt),
-                messageText: `${noti.from.username}님이 나에게 메세지를 보냈습니다.`,
+                messageText: text,
                 post: null,
                 message: null,
-                state: "MessageContainer"
+                state:into,
+                roomInfo:information
             }
         } else if (noti.post === null && noti.message === null) {
             return {
-                id: noti.from.id,
+                id: `${noti.from.id}${index}`,
                 userName: noti.from.username,
                 userImg: noti.from.avatar,
                 messageTime: caculateTime(noti.createdAt),
@@ -81,17 +111,21 @@ const UserNotification = ({ Notifications, navigation }) => {
                 roomInfo: {username: noti.from.username}
             }
         }
-    });
+        });
+        setData(Notis)
+        return () => {setData([])}
+    },[Notifications])
+    
+    
+
 
   return (
     <Container>
             <FlatList
-              data={Notis.reverse()}
+              data={data.reverse()}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
-                    <Card onPress={() => navigation.navigate(item.state, item.roomInfo
-                    )}
-                    >
+                    <Card onPress={() => navigation.navigate(item.state, item.roomInfo)}>
                         <UserInfo>
                             <UserImgWrapper>
                                 <UserImg source={{ uri: item.userImg }} />

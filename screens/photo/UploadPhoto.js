@@ -63,24 +63,36 @@ export default ({ navigation }) => {
   const [uploadMutation] = useMutation(UPLOAD, {
     refetchQueries: () => [{ query: FEED_QUERY }, {query:ME}]
   });
+
   const handleSubmit = async () => {
     if (captionInput.value === "" || locationInput.value === "") {
       Alert.alert("모든 항목을 입력해 주세요.");
     }
-    const formData = new FormData();
-    const name = photo.filename;
-    const [, type] = name.split(".");
-    const imageType = Platform.os === "ios" ? type.toLowerCase() : "image/jpeg";
-    formData.append("file", {
+
+    const data = photo.map((p) => {
+      const name = p.filename;
+      const uri = p.uri;
+      const [, type] = name.split(".");
+      const imageType = Platform.os === "ios" ? type.toLowerCase() : "image/jpeg";
+      
+      return {
       name,
       type: imageType,
-      uri: photo.uri
+      uri
+      }
     });
+    
+    const formData = new FormData();
+    
+    data.map((dt) => {
+      formData.append("file", dt)
+    });
+    
     try {
       setIsLoading(true);
       const {
-        data: { location }
-      } = await axios.post("https://semicolon-backend.herokuapp.com/api/upload", formData, {
+        data: { locationArray }
+      } = await axios.post("http://192.168.0.59:4000/api/upload", formData, {
         headers: {
           "content-type": "multipart/form-data"
         }
@@ -90,7 +102,7 @@ export default ({ navigation }) => {
         data: { upload }
       } = await uploadMutation({
           variables: {
-            files: [location],
+            files: locationArray,
             caption: captionInput.value,
             location: locationInput.value
           }
@@ -98,7 +110,7 @@ export default ({ navigation }) => {
       if (upload.id) {
         navigation.navigate("TabNavigation");
       }
-      
+
     } catch (e) {
       console.log("에러 " + e);
       Alert.alert("업로드 실패", "다시 시도해 주세요 🤔");
@@ -111,7 +123,7 @@ export default ({ navigation }) => {
     <View>
       <Container>
         <Image
-          source={{ uri: photo.uri }}
+          source={{ uri: photo[0].uri }}
           style={{ height: 80, width: 80, marginRight: 30 }}
         />
         <Form>
@@ -133,7 +145,7 @@ export default ({ navigation }) => {
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text>업로드 </Text>
+              <Text>업로드</Text>
             )}
           </Button>
         </Form>

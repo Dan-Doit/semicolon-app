@@ -20,7 +20,7 @@ const caculateTime = (time) => {
         const days = getTime[0].split('-');
         const times = getTime[1].substring(0, 8).split(':');
         if (date.getFullYear() == days[0]) {
-            if (date.getMonth() +1 == days[1]) {
+            if (date.getMonth() + 1 == days[1]) {
                 if (date.getDate() == days[2]) {
                     // plus 10 because UK has different time with KR
                     if (date.getHours() == parseInt(times[0])+9) { 
@@ -28,8 +28,8 @@ const caculateTime = (time) => {
                                 // cv
                              return `${parseInt(date.getSeconds()) - parseInt(times[2])} 초전`
                         }else return `${parseInt(date.getMinutes()) - parseInt(times[1])} 분전`
-                    }else return `${parseInt(date.getHours()) - parseInt(times[0])+9} 시간전`
-                } else return `${parseInt(date.getDay()) - parseInt(days[2])} 일전`;
+                    }else return `${parseInt(date.getHours()) - (parseInt(times[0])+9)} 시간전`
+                } else return `${parseInt(date.getDate()) - parseInt(days[2])} 일전`;
             } else return `${parseInt(date.getMonth()+1) - parseInt(days[1])} 달전`;
         } else return `${parseInt(date.getFullYear()) - parseInt(days[0])} 년전`;
 

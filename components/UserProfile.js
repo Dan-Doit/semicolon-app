@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Image, View, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons,MaterialIcons } from "@expo/vector-icons";
 import PropTypes from "prop-types";
 import styles from "../styles";
 import { Platform } from "@unimodules/core";
@@ -42,6 +42,10 @@ const Stat = styled.View`
 const Bold = styled.Text`
   font-weight: 600;
 `;
+const Name = styled.Text`
+  font-weight: 600;
+  margin-top: 5px;
+`
 
 const StatName = styled.Text`
   margin-top: 5px;
@@ -70,7 +74,9 @@ const Button = styled.View`
   width: ${constants.width / 2};
   align-items: center;
 `;
-
+const ViewRow = styled.View`
+  flexDirection: row;
+`;
 const NameContainer = styled.View`
   padding-vertical: 5px;
   margin-top: -10px;
@@ -80,25 +86,32 @@ const NameContainer = styled.View`
 
 const Button1 = styled.View`
   margin-top:10px;
-  width:90px;
+  width:85px;
   align-items: center;
-  margin-left : ${constants.width / 2.2/4};
+  margin-left : ${constants.width / 1.8 / 20 };
   background-color:${styles.navyColor};
   height:30px;
-  border-radius: 15px;
+  border-radius: 5px;
+  justify-content: center;
 `;
 
 const Text = styled.Text`
-margin-top : 5px;
   color: white;
   text-align: center;
   font-weight: 600;
 `;
 
+const ButtonView = styled.View`
+  flexDirection: row;
+  position: absolute;
+  right : 0;
+  top : 0;
+`;
+
 const SettingBar = styled.TouchableOpacity`
   width: ${constants.width - 40}
   height: 32px
-  backgroundColor: rgba(230,230,230,0.4)
+  background-color:${styles.navyColor};
   padding: 5px
   borderRadius: 5px
   margin : auto
@@ -107,7 +120,8 @@ const SettingBar = styled.TouchableOpacity`
 `;
 
 const EditText = styled.Text`
-  color: #5c5b5b;
+  color: white;
+  
   text-align: center;
 `;
 
@@ -131,6 +145,11 @@ const MY = gql`
   }
 `;
 
+const SET_STATE = gql`
+mutation state($state:String!){
+  state(state:$state)
+}`;
+
 const UserProfile = ({
   id,
   avatar,
@@ -144,13 +163,16 @@ const UserProfile = ({
   isSelf,
   username,
   firstName,
-  lastName
-
+  lastName,
+  state
 }) => {
     const me = {
     id: id,
     username: username
   }
+
+  const [states, setState] = useState(state);
+  const [change, setChange] = useState("친구공개")
   const { data, loading } = useQuery(MY);
   const [isGrid, setIsGrid] = useState(true);
   const toggleGrid = () => setIsGrid(i => !i);
@@ -161,6 +183,7 @@ const UserProfile = ({
       firstName,
       lastName,
       bio,
+      state,
   });
   const [sendNotificateMutation] = useMutation(SEND_NOTIFICATION, ({
     variables: {
@@ -170,6 +193,11 @@ const UserProfile = ({
     state: "1"
     }
   }));
+
+    const [stateMutation] = useMutation(SET_STATE, {
+      variables: { state: states },
+      refetchQueries: [{ query: ME }]
+    })
 
     const [isFollowingS, setIsFollowing] = useState(isFollowing);
     const [followMutation] = useMutation(FOLLOW, {
@@ -183,12 +211,12 @@ const UserProfile = ({
 
     const Following = async () => {
         if (isFollowingS === true) {
-            setIsFollowing(false);
-            unfollowMutation();
+          setIsFollowing(false);
+          await unfollowMutation();
         } else {
           setIsFollowing(true);
-          followMutation();
-          sendNotificateMutation();
+          await followMutation();
+          await sendNotificateMutation();
         }
   };
   
@@ -221,26 +249,39 @@ const UserProfile = ({
       <ProfileMeta>
         <ProfileStats>
           <NameContainer>
-            <Bold>{userInfo.firstName + userInfo.lastName}</Bold>
-
-            <Bio>{userInfo.bio}</Bio>
+            <Name>{username}</Name>
+            <Bio>{bio}</Bio>
           </NameContainer>
           <NameContainer>
-            {/*                          */}
+          <ButtonView>
+            {isSelf ? <Button1><TouchableOpacity onPress={async () => {
+              let cstate = states;
+              if (states === "1") {
+                cstate = "2";
+                setState(cstate);
+                setChange("친구공개")
+              } else {
+                cstate = "1";
+                setState(cstate);
+                setChange("전체공개");
+              }
+              await stateMutation();
+              }}><Text>{change}</Text></TouchableOpacity></Button1> : null}
             <Button1>
-              {isSelf ? (<TouchableOpacity onPress={useLogOut()}><Text>로그아웃</Text></TouchableOpacity>)
+              {isSelf ? (<TouchableOpacity onPress={useLogOut()}><MaterialIcons name="logout" size={24} color="white" /></TouchableOpacity>)
                 :
                 (<TouchableOpacity onPress={Following}>
-                  {isFollowingS ? <Text>UnFollow</Text> : <Text>Follow</Text>}
-                </TouchableOpacity>)}
-            </Button1>
-            {/*                          */}
+                  {isFollowingS ? <Text>Following</Text> : <Text>Follow</Text>}
+                  </TouchableOpacity>)}
+              </Button1>
+            </ButtonView>  
           </NameContainer>
         </ProfileStats>
       </ProfileMeta>
+      {isSelf ? 
       <SettingBar onPress={() => setEditProfile(true)}>
         <EditText>프로필 편집</EditText>
-      </SettingBar>
+      </SettingBar>:null}
       <ButtonContainer>
         <TouchableOpacity onPress={toggleGrid}>
           <Button>
@@ -261,12 +302,13 @@ const UserProfile = ({
           </Button>
         </TouchableOpacity>
       </ButtonContainer>
-      {isGrid ? <SquareBox>{posts && posts.map(p => {
-        return (<SquarePhoto key={p.id} {...p} />)
-      })}</SquareBox> : <>
-          {posts && posts.map(p => {
-            return (<Post key={p.id} {...p} me={me} />)
-          })}</>}
+      {isSelf || userInfo.state === "1" || (userInfo.state === "2" && isFollowing) ?
+        (<>{isGrid ? <SquareBox>{posts && posts.map(p => {
+          return (<SquarePhoto key={p.id} {...p} />)
+        })}</SquareBox> : <>
+            {posts && posts.map(p => {
+              return (<Post key={p.id} {...p} me={me} />)
+            })}</>}</>) : <EditText>비공개 계정입니다.</EditText>}
     </View>) : (
       <EditProfile navigation={navigation} userAvatar={avatar} userInfo={userInfo} setUserInfo={setUserInfo} setEditProfile={setEditProfile} />
     )

@@ -16,7 +16,6 @@ import {
 
 
 const caculateTime = (time) => { 
-    console.log(time)
     if (time !== undefined) {
         const date = new Date();
         const getTime = `${time}`.split('T');
@@ -26,7 +25,7 @@ const caculateTime = (time) => {
             if (date.getMonth() + 1 == days[1]) {
                 if (date.getDate() == days[2]) {
                     // plus 10 because UK has different time with KR
-                    if (date.getHours() == parseInt(times[0])+9) { 
+                    if (date.getHours() == parseInt(times[0])+9) {
                         if (date.getMinutes() == times[1]) { 
                                 // cv
                              return `${parseInt(date.getSeconds()) - parseInt(times[2])} 초전`

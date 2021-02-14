@@ -6,7 +6,7 @@ import AuthInput from "../../components/AuthInput";
 import useInput from "../../hooks/useInput";
 import { Alert } from "react-native";
 import { useMutation } from 'react-apollo-hooks';
-import { LOG_IN, CHECK_EMAIL } from './AuthQueries';
+import { LOG_IN } from './AuthQueries';
 import * as Facebook from 'expo-facebook';
 import * as Google from 'expo-google-app-auth';
 
@@ -26,6 +26,7 @@ const FBContainer = styled.View`
   border-color: ${props => props.theme.lightGreyColor};
   border-style: solid;
 `;
+
 export default ({ navigation }) => {
     const emailInput = useInput(navigation.getParam("email", ""));
     const [loading, setLoading] = useState(false);
@@ -35,7 +36,6 @@ export default ({ navigation }) => {
         }
 
     });
-    const [checkemailmutation] = useMutation(CHECK_EMAIL, { variables: { email: emailInput.value } })
     const handleLogin = async () => {
         const { value } = emailInput;
         const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -48,6 +48,7 @@ export default ({ navigation }) => {
 
             setLoading(true);
             const { data: { requestSecret } } = await requestSecretMutation();
+            console.log(requestSecret);
             if (requestSecret) {
                 Alert.alert("이메일을 확인해주세요");
                 navigation.navigate("Confirm", { email: value });
@@ -58,7 +59,7 @@ export default ({ navigation }) => {
 
         } catch (error) {
             console.log(error);
-            Alert.alert("로그인 실패","지금은 로그인할수 없어요 😥");
+            Alert.alert("로그인 실패", "지금은 로그인할수 없어요 😥");
         } finally {
             setLoading(false);
         }
@@ -128,7 +129,7 @@ export default ({ navigation }) => {
                     <AuthButton bgColor={"#2D4DA7"} loading={loading} onPress={FBlogIn} text="페이스북으로 회원가입" />
                 </FBContainer>
                 <GGContainer>
-                    <AuthButton bgColor={"#E34133"}  loading={loading} onPress={GGLogIn} text="구글로 회원가입" />
+                    <AuthButton bgColor={"#E34133"} loading={loading} onPress={GGLogIn} text="구글로 회원가입" />
                 </GGContainer>
             </View>
         </TouchableWithoutFeedback>

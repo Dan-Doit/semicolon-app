@@ -19,7 +19,6 @@ export default function App() {
   const preLoad = async () => {
     
   await Asset.loadAsync([require('./assets/icon.png')]);
-  // await AsyncStorage.clear();
 
     try {
       await Font.loadAsync({

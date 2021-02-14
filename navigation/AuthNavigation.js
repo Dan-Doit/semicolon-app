@@ -5,7 +5,10 @@ import Confirm from "../screens/auth/Confirm";
 import Login from "../screens/auth/Login";
 import AuthHome from "../screens/auth/AuthHome";
 import CheckEmail from "../screens/auth/CheckEmail";
+import FindCheckemail from "../screens/auth/FindCheckemail";
+import UpdatePw from "../screens/auth/UpdatePw";
 import LoginConfirm from "../screens/auth/LoginConfirm";
+import FindConfirmPw from "../screens/auth/FindConfirmPw";
 
 const AuthNavigation = createStackNavigator(
   {
@@ -14,7 +17,10 @@ const AuthNavigation = createStackNavigator(
     Login,
     Confirm,
     CheckEmail,
-    LoginConfirm
+    LoginConfirm,
+    FindCheckemail,
+    UpdatePw,
+    FindConfirmPw
   },
   {
     headerMode: "none"

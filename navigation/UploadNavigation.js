@@ -48,7 +48,7 @@ export default createStackNavigator({
             title: " ",
             headerBackTitle: " ",
             headerTintColor: styles.blackColor,
-            headerRight: <UploadLink />
+            headerRight: ()=><UploadLink />
         }
     },
     PUpload: {

@@ -33,3 +33,7 @@ yarn add react-native-gifted-chat
 yarn add expo-permissions
 yarn add expo-notifications
 yarn add react-native-gesture-handler
+yarn add react-native-tags
+yarn add react-native-modal
+expo install expo-av
+expo install expo-linear-gradient

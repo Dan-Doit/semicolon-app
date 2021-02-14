@@ -4,13 +4,15 @@ import TabNavigation from "./TabNavigation";
 import PhotoNavigation from "./PhotoNavigation";
 import MessageNavigation from "./MessageNavigation";
 import UploadNavigation from "./UploadNavigation";
+import StoryNavigation from "./StoryNavigation";
 
 const MainNavigation = createStackNavigator(
     {
         TabNavigation,
         PhotoNavigation,
         MessageNavigation,
-        UploadNavigation
+        UploadNavigation,
+        StoryNavigation
 }   ,
     {
         headerMode: "none",

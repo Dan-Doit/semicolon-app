@@ -12,6 +12,7 @@ import { Platform } from "react-native";
 import NavIcon from "../components/NavIcon";
 import { AntDesign } from '@expo/vector-icons'; 
 import styles from "../styles";
+import StoryLink from "../components/StoryLink";
 import UserDetail from "../screens/UserDetail";
 import CommentDetail from "../screens/CommentDetail";
 import NavigationContainer from "./EventNavigation/index";
@@ -62,6 +63,7 @@ export default createBottomTabNavigator(
     Home: {
       screen: stackFactory(Home, {
         headerRight: <MessagesLink />,
+        headerLeft:<StoryLink />,
         headerTitle:()=><NavigationContainer />
       }),
       navigationOptions: {

@@ -3,6 +3,7 @@ import SearchBar from "../../../components/SearchBar";
 import SearchPresenter from "./SearchPresenter";
 
 export default class extends React.Component {
+
   static navigationOptions = ({ navigation }) => ({
     headerTitle: ()=>(
       <SearchBar
@@ -17,7 +18,8 @@ export default class extends React.Component {
     const { navigation } = props;
     this.state = {
       term: "",
-      shouldFetch: false
+      shouldFetch: false,
+      action : "recommend"
     };
     navigation.setParams({
       term: this.state.term,
@@ -27,16 +29,17 @@ export default class extends React.Component {
   }
   onChange = text => {
     const { navigation } = this.props;
-    this.setState({ term: text, shouldFetch: false });
+    this.setState({ term: text, shouldFetch: false, action : "recommend" });
     navigation.setParams({
       term: text
     });
   };
   onSubmit = () => {
     this.setState({ shouldFetch: true });
+    this.setState({ action: "search" });
   };
   render() {
-    const { term, shouldFetch } = this.state;
-    return <SearchPresenter term={term} shouldFetch={shouldFetch} />;
+    const { term, shouldFetch, action } = this.state;
+    return <SearchPresenter term={term} shouldFetch={shouldFetch} action={action} />;
   }
 }

@@ -53,7 +53,7 @@ export default createStackNavigator(
                 headerBackTitle: " ",
                 headerTintColor: styles.blackColor,
                 title: "사진 선택",
-                headerRight: <UploadLink />
+                headerRight: ()=><UploadLink />
             }
            
         },

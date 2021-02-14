@@ -1,15 +1,8 @@
 import React from "react";
-import { TouchableOpacity, Image, StyleSheet } from "react-native";
+import { TouchableOpacity, Image } from "react-native";
 import { withNavigation } from "react-navigation";
 import PropTypes from "prop-types";
 import constants from "../Constants";
-
-const BorderStyle = StyleSheet.create({
-  border: {
-    borderWidth: 10,
-    borderColor:'white'
-  }
-})
 
 const SquarePhoto = ({ navigation, files = [], id }) => (
     <TouchableOpacity onPress={() => navigation.navigate("Detail", { id })}>

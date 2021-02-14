@@ -5,8 +5,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "react-apollo-hooks";
 import Loader from "../../../components/Loader";
 import SquarePhoto from "../../../components/SquarePhoto";
-import styled from "styled-components/native";
-
+import RecommendPresenter from "./RecommendPresenter";
 
 export const SEARCH = gql`
   query search($term: String!) {
@@ -22,7 +21,8 @@ export const SEARCH = gql`
   }
 `;
 
-const SearchPresenter = ({ term, shouldFetch }) => {
+const SearchPresenter = ({ term, shouldFetch, action }) => {
+
     const [refreshing, setRefreshing] = useState(false);
     const { data, loading, refetch } = useQuery(SEARCH, {
         variables: {
@@ -37,18 +37,20 @@ const SearchPresenter = ({ term, shouldFetch }) => {
             await refetch({ variables: { term } });
         } catch (e) {
         } finally {
-            setRefreshing(false);
+          setRefreshing(false);
         }
     };
   return (
-        <ScrollView contentContainerStyle={{ flexDirection: "row", flexWrap:"wrap" }} refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={refreshing} />} >
-            {loading ? (<Loader />
-            ) : (data &&
-                data.searchPost &&
-                data.searchPost.map(post => <SquarePhoto key={post.id} {...post} />)
-                )
-            }
-      </ScrollView >
+    <ScrollView contentContainerStyle={{ flexDirection: "row", flexWrap:"wrap" }} refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={refreshing} />} >
+      
+      {action === "search" && loading ?
+        (<Loader />)
+        :
+        (data && data.searchPost && data.searchPost.map(post => <SquarePhoto key={post.id} {...post} />))}     
+      
+      {action === "recommend" && <RecommendPresenter />}
+      
+    </ScrollView >
     );
 };
 

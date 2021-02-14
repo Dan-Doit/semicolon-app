@@ -40,7 +40,19 @@ mutation confirmUser($email:String!, $password : String!){
 `
 
 export const CHECK_EMAIL = gql`
-query checkemail($email:String){
+mutation checkemail($email:String!){
   checkemail(email:$email)
 }
 `
+
+export const FIND_PW = gql`
+mutation findrequestSecret($email:String!){
+  findrequestSecret(email:$email)
+}`
+
+export const UPDATE_PW = gql`
+mutation updatePw($email:String! $password:String!){
+  updatePw(email:$email, password:$password){
+    id
+  }
+}`

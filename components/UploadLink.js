@@ -19,7 +19,9 @@ export default withNavigation(({ navigation }) => {
   let navigationName;
   if (navigation.getParam("profile")) {
     navigationName = "PUpload";
-  } else {
+  } else if (navigation.getParam("story")) {
+    navigationName = "StoryUpload";
+  }else {
     navigationName = "Upload";
   }
   return(

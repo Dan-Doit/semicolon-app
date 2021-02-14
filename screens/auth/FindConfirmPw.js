@@ -6,8 +6,8 @@ import AuthInput from "../../components/AuthInput";
 import useInput from "../../hooks/useInput";
 import { Alert } from "react-native";
 import { useMutation } from 'react-apollo-hooks';
-import { useLogIn } from "../../AuthContext";
-import { CONFIRM_USER } from "./AuthQueries";
+import { CONFIRM_SECRET } from "./AuthQueries";
+
 
 const View = styled.View`
   justify-content: center;
@@ -16,36 +16,32 @@ const View = styled.View`
 `;
 
 export default ({ navigation }) => {
-    const Pwinput = useInput("");
-    const logIn = useLogIn();
+    const confirmInput = useInput("");
     const [loading, setLoading] = useState(false);
-    const [confirmUserMutation] = useMutation(CONFIRM_USER, {
+    const [confirmSecretMutation] = useMutation(CONFIRM_SECRET, {
         variables: {
-            password: Pwinput.value,
+            secret: confirmInput.value,
             email: navigation.getParam("email")
         }
     });
     const handleConfirm = async () => {
-        const { value } = Pwinput;
-        if (value === "") {
-            console.log(value);
-            return Alert.alert("비밀번호를 제대로 입력해 주세요.");
+        const { value } = confirmInput;
+        if (value === "" || !value.includes(" ")) {
+            return Alert.alert("제대로 입력해주세요!");
         }
         try {
             setLoading(true);
             const {
-                data: { confirmUser }
-            } = await confirmUserMutation();
-            console.log(confirmUser)
-            if (confirmUser === "TryAgain") {
-                Alert.alert("비밀번호가 틀렸어요!");
+                data: { confirmSecret }
+            } = await confirmSecretMutation();
+            if (confirmSecret !== "" || confirmSecret !== false) {
+                navigation.navigate("UpdatePw", { email: navigation.getParam("email") });
             } else {
-                console.log(confirmUser);
-                await logIn(confirmUser);
+                Alert.alert("시크릿 코드가 틀렸어요..");
             }
         } catch (e) {
             console.log(e);
-            Alert.alert("비밀번호 오류 😎");
+            Alert.alert("지금은 시도할 수 없어요.");
         } finally {
             setLoading(false);
         }
@@ -54,14 +50,13 @@ export default ({ navigation }) => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View>
                 <AuthInput
-                    {...Pwinput}
-                    placeholder="비밀번호"
+                    {...confirmInput}
+                    placeholder="Secret"
                     returnKeyType="send"
                     onSubmitEditing={handleConfirm}
                     autoCorrect={false}
-                    secureTextEntry={true}
                 />
-                <AuthButton loading={loading} onPress={handleConfirm} text="로그인" />
+                <AuthButton loading={loading} onPress={handleConfirm} text="확인하세요 확마" />
             </View>
         </TouchableWithoutFeedback>
     );

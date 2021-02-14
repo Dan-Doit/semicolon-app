@@ -35,8 +35,8 @@ export const GET_NOTIFICATION = gql`
 
 export default ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { loading, data, refetch } = useQuery(GET_NOTIFICATION);
-  const [Notis, setNotis] = useState([]);
+    const { loading, data, refetch } = useQuery(GET_NOTIFICATION, {
+  });
 
   const refresh = async () => {
     try {

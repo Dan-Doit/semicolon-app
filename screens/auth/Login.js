@@ -34,9 +34,11 @@ export default ({ navigation }) => {
       return Alert.alert("이메일을 제대로 입력해 주세요");
     }
     const { data: { checkemail } } = await checkemailmutation();
+    console.log(checkemail);
     try {
       setLoading(true);
       if (checkemail) {
+        Alert.alert("비밀번호를 입력해주세요");
         navigation.navigate("LoginConfirm", { email: value });
 
       } else {
@@ -62,6 +64,7 @@ export default ({ navigation }) => {
           autoCorrect={false}
         />
         <AuthButton loading={loading} onPress={handleLogin} text="로그인" />
+        <AuthButton loading={loading} onPress={() => { navigation.navigate("FindCheckemail") }} text="비밀번호 찾기" />
       </View>
     </TouchableWithoutFeedback>
   );

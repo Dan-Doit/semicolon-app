@@ -9,11 +9,12 @@ import { gql } from "apollo-boost";
 import { useMutation } from "react-apollo-hooks";
 import { FEED_QUERY } from "../home/Home";
 import { ME } from "../tabs/Profile";
+import Tags from "react-native-tags";
 import { GET_USER } from "../UserDetail";
 
 const UPLOAD = gql`
-  mutation upload($caption: String!, $files: [String!]!, $location: String) {
-    upload(caption: $caption, files: $files, location: $location) {
+  mutation upload($caption: String!, $files: [String!]!, $location: String, $hashes:[String!]) {
+    upload(caption: $caption, files: $files, location: $location, hashes: $hashes) {
       id
       caption
       location
@@ -58,6 +59,7 @@ const Text = styled.Text`
 export default ({ navigation }) => {
   const [loading, setIsLoading] = useState(false);
   const photo = navigation.getParam("photo");
+  const [tagInput, setTagInput] = useState();
   const captionInput = useInput("");
   const locationInput = useInput("");
   const [uploadMutation] = useMutation(UPLOAD, {
@@ -92,7 +94,7 @@ export default ({ navigation }) => {
       setIsLoading(true);
       const {
         data: { locationArray }
-      } = await axios.post("http://192.168.0.59:4000/api/upload", formData, {
+      } = await axios.post("https://semicolon-backend.herokuapp.com/api/upload", formData, {
         headers: {
           "content-type": "multipart/form-data"
         }
@@ -103,6 +105,7 @@ export default ({ navigation }) => {
       } = await uploadMutation({
           variables: {
             files: locationArray,
+            hashes:[...tagInput],
             caption: captionInput.value,
             location: locationInput.value
           }
@@ -140,6 +143,15 @@ export default ({ navigation }) => {
             placeholder="위치"
             multiline={true}
             placeholderTextColor={styles.darkGreyColor}
+          />
+          <Tags
+            initialText="Tag"
+            onChangeTags={tags => {
+              return setTagInput([...tags])
+            }}
+            onTagPress={(index, tagLabel, event) => console.log(index, tagLabel, event)}
+            inputStyle={{ backgroundColor: "white" }}
+            maxNumberOfTags={3}
           />
           <Button onPress={handleSubmit}>
             {loading ? (

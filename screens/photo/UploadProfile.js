@@ -52,26 +52,26 @@ export default ({ navigation }) => {
   const handleSubmit = async () => {
 
     const formData = new FormData();
-      const name = photo.filename;
+      const name = photo[0].filename;
       const [, type] = name.split(".");
     const imageType = Platform.os === "ios" ? type.toLowerCase() : "image/jpeg";
     formData.append("file", {
       name,
       type: imageType,
-      uri: photo.uri
+      uri: photo[0].uri
     });
     try {
       setIsLoading(true)
       const {
-        data: { location }
-      } = await axios.post("https://teamsemicolon-backend.herokuapp.com/api/upload", formData, {
+        data: { locationArray }
+      } = await axios.post("https://semicolon-backend.herokuapp.com/api/upload", formData, {
         headers: {
           "content-type": "multipart/form-data"
         }
       });
       const { data: editUser } = await editUserMutation(
         {
-          variables: { avatar: location },
+          variables: { avatar: locationArray[0] },
           refetchQueries: [{ query: ME, query: FEED_QUERY }]
         })
 
@@ -93,7 +93,7 @@ export default ({ navigation }) => {
     <View>
       <Container>
         <Image
-          source={{ uri: photo.uri }}
+          source={{ uri: photo[0].uri }}
           style={{ height: 80, width: 80, marginLeft: 120, borderRadius: 40 }}
         />
         <Form>

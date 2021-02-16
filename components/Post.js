@@ -10,6 +10,7 @@ import styles from "../styles";
 import Tags from "react-native-tags";
 import { useMutation, useSubscription } from "react-apollo-hooks";
 import { withNavigation } from "react-navigation";
+import Popup from "../screens/Popup";
 
 export const TOGGLE_LIKE = gql`
   mutation toggelLike($postId: String!) {
@@ -62,7 +63,7 @@ const CommentCount = styled.Text`
 `;
 
 const Tagview = styled.View`
-flex:1;
+  flex:1;
     flex-direction: row;
     align-items:flex-end;
     justifyContent: flex-end;
@@ -142,7 +143,6 @@ const Post = ({
           }}
         />))}
       </Tagview>
-      {user.isSelf ? <Popup id={id} copyCaption={copyCaption} setCopyCaption={setCopyCaption} /> : null}
       </Header>
       <Swiper style={{ height: constants.width/0.88 }}>
         {files.map(file => (
@@ -180,7 +180,8 @@ const Post = ({
                 name={Platform.OS === "ios" ? "comment-o" : "comment-o"}
               />
             </IconContainer>
-          </Touchable>
+        </Touchable>
+      {user.isSelf ? <Popup id={id} copyCaption={copyCaption} setCopyCaption={setCopyCaption} /> : null}
         </IconsContainer>
         <Touchable>
           <Bold>{likeCount === 1 ? "1 like" : `${likeCount} likes`}</Bold>

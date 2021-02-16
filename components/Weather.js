@@ -42,7 +42,7 @@ const weatherOptions = {
     icon: <MaterialCommunityIcons name="drama-masks" size={24} color="black" />
   },
   Haze: {
-    event: "  우울하니 카페서 라때 한잔어때요?",
+    event: "  우울하니 카페서 라떼 한잔?",
     icon: <Feather name="coffee" size={24} color="black" />
   }
 };

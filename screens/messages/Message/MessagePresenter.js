@@ -44,7 +44,7 @@ const NEW_MESSAGE = gql`
 `;
 
 export default ({ roomId, Im, toId, data, myName }) => {
-    
+
     const [sendMessageMutation] = useMutation(SEND_MESSAGE);
     const { data: notificateMsg } = useSubscription(NEW_MESSAGE, {
         variables: {

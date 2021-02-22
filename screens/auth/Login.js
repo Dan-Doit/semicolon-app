@@ -38,7 +38,6 @@ export default ({ navigation }) => {
     try {
       setLoading(true);
       if (checkemail) {
-        Alert.alert("비밀번호를 입력해주세요");
         navigation.navigate("LoginConfirm", { email: value });
 
       } else {

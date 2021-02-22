@@ -4,7 +4,7 @@ import { withNavigation } from "react-navigation";
 import PropTypes from "prop-types";
 import constants from "../Constants";
 
-const SquarePhoto = ({ navigation, files = [], id, index }) => {
+const RandomSquare = ({ navigation, files = [], id, index }) => {
     let action = "big"
 
     if (index % 8 === 0) {
@@ -31,7 +31,7 @@ const SquarePhoto = ({ navigation, files = [], id, index }) => {
     )
 };
 
-SquarePhoto.propTypes = {
+RandomSquare.propTypes = {
     files: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
@@ -41,4 +41,4 @@ SquarePhoto.propTypes = {
     id: PropTypes.string.isRequired
 };
 
-export default withNavigation(SquarePhoto);
+export default withNavigation(RandomSquare);

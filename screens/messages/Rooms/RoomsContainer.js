@@ -37,7 +37,7 @@ export const GET_ROOMS = gql`
 
 export default ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { data: medata, loading: meloading } = useQuery(ME);
+  const { data: medata, loading: meloading } = useQuery(ME, {fetchPolicy: 'cache-and-network'});
   const { loading, data, refetch } = useQuery(GET_ROOMS);
   
   const refresh = async () => {

@@ -39,7 +39,8 @@ export default class extends React.Component {
     this.setState({ action: "search" });
   };
   render() {
+    const { navigation } = this.props;
     const { term, shouldFetch, action } = this.state;
-    return <SearchPresenter term={term} shouldFetch={shouldFetch} action={action} />;
+    return <SearchPresenter term={term} navigation={navigation} shouldFetch={shouldFetch} action={action} />;
   }
 }

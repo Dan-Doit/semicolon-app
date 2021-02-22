@@ -62,7 +62,8 @@ export default ({ data, medata, navigation }) => {
                     roomId: "needNewRoom",
                     toId: result.id,
                     userName: result.username,
-                    Im: medata.me.id
+                    Im: medata.me.id,
+                    myName:medata.me.username
                   }
                 })}
                 >

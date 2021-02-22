@@ -28,6 +28,7 @@ export const POST_FRAGMENT = gql`
         avatar
         id
         username
+        isSelf
       }
     }
     createdAt

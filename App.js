@@ -19,7 +19,7 @@ export default function App() {
   const preLoad = async () => {
     
   await Asset.loadAsync([require('./assets/icon.png')]);
-
+    // AsyncStorage.clear();
     try {
       await Font.loadAsync({
         ...AntDesign.font

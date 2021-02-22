@@ -113,7 +113,6 @@ export default ({ navigation }) => {
     // if (cameraRef) {
     setRecording(true)
     const { uri, codec = "mp4" } = await cameraRef.current.recordAsync();
-    console.log("uri",uri)
     setUri(uri)
     setType(codec)
     // setVideo(svideo)

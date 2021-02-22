@@ -35,7 +35,7 @@ export default ({ navigation }) => {
 
             setLoading(true);
             const { data: { findrequestSecret } } = await findrequestSecretMutation();
-            console.log(findrequestSecret);
+
             if (findrequestSecret) {
                 Alert.alert("이메일을 확인해주세요");
                 navigation.navigate("FindConfirmPw", { email: value });

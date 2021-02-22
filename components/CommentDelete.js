@@ -4,10 +4,10 @@ import { FEED_QUERY } from "../screens/home/Home";
 import { DELETE_COMMENT } from "./Comments";
 import { useMutation } from "react-apollo-hooks";
 import PropTypes from "prop-types";
-import { EvilIcons } from "@expo/vector-icons";
+import { EvilIcons, Entypo } from "@expo/vector-icons";
 
 const CommentDelete = ({ setSelfComments, comments, id }) => {
-    
+
     const [removeCommentMutation] = useMutation(DELETE_COMMENT, {
     variables: { id }, refetchQueries: [{query:FEED_QUERY}]
     });
@@ -16,14 +16,14 @@ const CommentDelete = ({ setSelfComments, comments, id }) => {
     await removeCommentMutation();
     setSelfComments([...comments].filter(comment => comment.id !== id))
     } 
-    return (
+  return (
         <TouchableOpacity onPress={() => { delComment() }}
             activeOpacity={0.8}
             style={styles.button}
         >
            
-        <EvilIcons size={30} name={"trash"}/>
-         
+         {comments.user.isSelf ? <EvilIcons size={30} name={"trash"} /> : <Entypo name="block" size={30} color="black" /> }
+  
         </TouchableOpacity>
     )
 }

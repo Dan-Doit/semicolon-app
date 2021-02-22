@@ -41,7 +41,7 @@ const SEND_MESSAGE = gql`
 export default ({ navigation }) => {
 
   const roomInfo = navigation.getParam("roomInfo");
-  
+
   if (roomInfo.roomId !== "needNewRoom") {
 
     const { roomId, Im, toId, myName } = roomInfo;

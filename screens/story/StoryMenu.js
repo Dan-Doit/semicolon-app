@@ -37,7 +37,7 @@ export default ({ userInfo, menuUp, setMenuUp }) => {
         setLoading(true);
         await hideStoryMutation();
         setLoading(false);
-        setModalVisible(!isModalVisible);
+        setMenuUp(!menuUp);
     }
 
     return (
@@ -48,7 +48,7 @@ export default ({ userInfo, menuUp, setMenuUp }) => {
                         <View style={{ marginBottom: 10}}>
                           <InputButton onPress={hideStory}>
                             {loading ? <ActivityIndicator color={"black"} /> : 
-                            <Text style={{ color: "black", fontWeight: "bold" }}>숨기기</Text>}
+                            <Text style={{ color: "black", fontWeight: "bold" }}>삭제</Text>}
                           </InputButton>
                         </View>
 

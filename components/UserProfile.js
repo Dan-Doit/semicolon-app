@@ -124,6 +124,11 @@ const EditText = styled.Text`
   
   text-align: center;
 `;
+const PublicText = styled.Text`
+  color: black;
+  margin-top:25px;
+  text-align: center;
+`;
 
 const FOLLOW = gql`
   mutation follow($id: String!) {
@@ -303,12 +308,12 @@ const UserProfile = ({
         </TouchableOpacity>
       </ButtonContainer>
       {isSelf || userInfo.state === "1" || (userInfo.state === "2" && isFollowing) ?
-        (<>{isGrid ? <SquareBox>{posts && posts.map(p => {
+        (<>{isGrid ? <SquareBox>{posts && posts.reverse().map(p => {
           return (<SquarePhoto key={p.id} {...p} />)
         })}</SquareBox> : <>
-            {posts && posts.map(p => {
+            {posts && posts.reverse().map(p => {
               return (<Post key={p.id} {...p} me={me} />)
-            })}</>}</>) : <EditText>비공개 계정입니다.</EditText>}
+            })}</>}</>) : <PublicText>비공개 계정입니다.</PublicText>}
     </View>) : (
       <EditProfile navigation={navigation} userAvatar={avatar} userInfo={userInfo} setUserInfo={setUserInfo} setEditProfile={setEditProfile} />
     )

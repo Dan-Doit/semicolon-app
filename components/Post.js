@@ -139,7 +139,7 @@ const Post = ({
           initialTags={[hash.tag]}
           readonly
           onTagPress={(index, tagLabel) => {
-            return navigation.navigate("Search", { tagLabel })
+            return navigation.navigate("Tag", { term: tagLabel })
           }}
         />))}
       </Tagview>

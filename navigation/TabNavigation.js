@@ -16,6 +16,7 @@ import StoryLink from "../components/StoryLink";
 import UserDetail from "../screens/UserDetail";
 import CommentDetail from "../screens/CommentDetail";
 import NavigationContainer from "./EventNavigation/index";
+import Tag from "../screens/Tag";
 
 const stackFactory = (initialRoute, customConfig) =>
   createStackNavigator(
@@ -34,7 +35,12 @@ const stackFactory = (initialRoute, customConfig) =>
           title: "Post"
         }
       },
-      
+      Tag: {
+        screen: Tag,
+        navigationOptions: ({ navigation }) => ({
+          title: navigation.getParam("term")
+        })
+      },
       UserDetail: {
         screen: UserDetail,
         navigationOptions: ({ navigation }) => ({

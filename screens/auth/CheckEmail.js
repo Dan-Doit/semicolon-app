@@ -69,7 +69,7 @@ export default ({ navigation }) => {
         try {
             setLoading(true);
             await Facebook.initializeAsync({
-                appId: '2733777443554055',
+                appId: '119711363348825',
             });
             const {
                 type,
@@ -81,7 +81,7 @@ export default ({ navigation }) => {
                 // Get the user's name using Facebook's Graph API
                 const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,last_name,first_name,email`);
                 const { email, first_name, last_name } = await response.json();
-                navigation.navigate("Signup", { email, first_name, last_name });
+                navigation.navigate("Signup", { email, firstName: first_name, lastName: last_name });
                 setLoading(false);
             } else {
                 setLoading(false);
@@ -103,7 +103,7 @@ export default ({ navigation }) => {
                     headers: { Authorization: `Bearer ${result.accessToken}` }
                 });
                 const { email, family_name, given_name } = await user.json();
-                navigation.navigate("Signup", { email, family_name, given_name });
+                navigation.navigate("Signup", { email, firstName: family_name, lastName: given_name });
             } else {
                 return { cancelled: true };
             }
